@@ -1,6 +1,9 @@
 body, html, #root {
   background: #fff;
   color: #222;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
 * {
@@ -9,9 +12,10 @@ body, html, #root {
 
 #root {
   max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  margin: 0;
+  padding: 200px; /* optional spacing from edges */
+  height: 100vh;
+  display: block;
 }
 
 .logo {
@@ -28,12 +32,8 @@ body, html, #root {
 }
 
 @keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -49,3 +49,33 @@ body, html, #root {
 .read-the-docs {
   color: #888;
 }
+
+/* Clean grid layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 1.2fr 1fr; /* adjust column sizes */
+  grid-template-rows: auto auto auto auto; /* auto height rows */
+  gap: 0px 72px; /* space between elements */
+  width: 100%;
+  max-width: 1280px;
+}
+
+.dashboard-grid > * {
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: top;
+  border-radius: 8px;
+}
+
+/* Place each child explicitly */
+.gauge1 { grid-column: 1; grid-row: 1 / span 2; }
+.gauge2 { grid-column: 1; grid-row: 3 / span 2; }
+.gauge3 { grid-column: 2; grid-row: 1 / span 2; }
+.gauge4 { grid-column: 2; grid-row: 3 / span 2; }
+.battery { grid-column: 3; grid-row: 1; }
+.elpris { grid-column: 3; grid-row: 2 / span 3; }
+.sso { grid-column: 4; grid-row: 1 / span 2; }
+.eso { grid-column: 4; grid-row: 3 / span 2; }

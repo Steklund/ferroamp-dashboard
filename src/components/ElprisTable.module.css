@@ -1,0 +1,52 @@
+.container {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px #0001;
+  padding: 1rem;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.heading {
+  text-align: center;
+  margin: 0 0 8px 0;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.1rem;
+}
+
+.th {
+  text-align: left;
+  padding: 4px 8px;
+}
+
+.thRight {
+  text-align: right;
+  padding: 4px 8px;
+}
+
+.td {
+  padding: 4px 8px;
+}
+
+.tdRight {
+  padding: 4px 8px;
+  text-align: right;
+}
+
+.rowGreen {
+  background: #68f789;
+  border-bottom: 1px solid #eee;
+}
+
+.rowRed {
+  background: #f07070;
+  border-bottom: 1px solid #eee;
+}
+
+.rowDefault {
+  border-bottom: 1px solid #eee;
+}
