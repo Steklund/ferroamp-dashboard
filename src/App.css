@@ -1,6 +1,6 @@
 body, html, #root {
   background: #fff;
-  color: #222;
+  color: #000000;
   height: 100vh;
   margin: 0;
   padding: 0;
@@ -53,7 +53,7 @@ body, html, #root {
 /* Clean grid layout */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1.2fr 1.2fr 1.2fr 1fr; /* adjust column sizes */
+  grid-template-columns: 1.2fr 1.2fr 1.4fr 1fr; /* adjust column sizes */
   grid-template-rows: auto auto auto auto; /* auto height rows */
   gap: 0px 72px; /* space between elements */
   width: 100%;

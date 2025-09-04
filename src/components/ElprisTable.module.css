@@ -1,10 +1,11 @@
 .container {
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 2px 8px #0001;
+  box-shadow: 0 8px 8px #0001;
   padding: 1rem;
   max-width: 320px;
   margin: 0 auto;
+  border: 2px solid #000000
 }
 
 .heading {
@@ -38,15 +39,24 @@
 }
 
 .rowGreen {
-  background: #68f789;
-  border-bottom: 1px solid #eee;
+  background: #a1fcb6;
+  border-top: 1px solid #000000;
+  border-bottom: 1px solid #000000;
+  border-right: 1px solid #000000;
+  border-left: 1px solid #000000;
 }
 
 .rowRed {
-  background: #f07070;
-  border-bottom: 1px solid #eee;
+  background: #fc9f9f;
+  border-top: 1px solid #000000;
+  border-bottom: 1px solid #000000;
+  border-right: 1px solid #000000;
+  border-left: 1px solid #000000;
 }
 
 .rowDefault {
-  border-bottom: 1px solid #eee;
+  border-top: 1px solid #000000;
+  border-bottom: 1px solid #000000;
+  border-right: 1px solid #000000;
+  border-left: 1px solid #000000;
 }

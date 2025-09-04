@@ -4,9 +4,10 @@
   align-items: center;
   padding: 18px 0;
   border-radius: 18px;
-  box-shadow: 0 2px 8px #0001;
+  box-shadow: 0 80px 80px #0001;
   margin-bottom: 18px;
   transition: background 0.3s;
+  border: 2px solid #000000;
 }
 
 .label {

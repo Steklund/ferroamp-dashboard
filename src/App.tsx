@@ -20,7 +20,7 @@ function App() {
     usage: Metric
     batteryPower: Metric
   }>({
-    solarPower: { current: '-', min: '0', max: '0' },
+    solarPower: { current: '-', min: '0', max: '100' },
     gridPower: { current: '-', min: '0', max: '100' },
     usage: { current: '-', min: '-100', max: '100' },
     batteryPower: { current: '-', min: '-100', max: '100' },
@@ -166,8 +166,8 @@ function App() {
           leftLabel={"Laddar, Charging"}
           rightLabel={"Laddar ur, Discharging"}
           arcCenterColor='#bbb'
-          arcLeftColor='#084e0bff'
-          arcRightColor='#084e0bff'
+          arcLeftColor='#0c8312ff'
+          arcRightColor='#0c8312ff'
         />
       </div>
       <div className="gauge4">
