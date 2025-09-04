@@ -1,0 +1,27 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 0;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px #0001;
+  margin-bottom: 18px;
+  transition: background 0.3s;
+}
+
+.label {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #000000;
+  text-align: center;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.value {
+  font-size: 5rem;
+  font-weight: 700;
+  color: #000000;
+  margin: 8px 0 0 0;
+  text-align: center;
+}

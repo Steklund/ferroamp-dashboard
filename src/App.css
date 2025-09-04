@@ -1,3 +1,12 @@
+body, html, #root {
+  background: #fff;
+  color: #222;
+}
+
+* {
+  color-scheme: only light;
+}
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
