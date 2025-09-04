@@ -20,10 +20,10 @@ function App() {
     usage: Metric
     batteryPower: Metric
   }>({
-    solarPower: { current: '-', min: '0', max: '100' },
-    gridPower: { current: '-', min: '0', max: '100' },
-    usage: { current: '-', min: '-100', max: '100' },
-    batteryPower: { current: '-', min: '-100', max: '100' },
+    solarPower: { current: '-', min: '0', max: '1000' },
+    gridPower: { current: '-', min: '0', max: '1000' },
+    usage: { current: '-', min: '0', max: '1000' },
+    batteryPower: { current: '-', min: '0', max: '1000' },
   })
   const [soc, setSoc] = useState('-')
   const [esoRows, setEsoRows] = useState<Record<string, any>[]>([])
