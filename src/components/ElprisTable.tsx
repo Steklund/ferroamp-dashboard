@@ -51,27 +51,33 @@ const ElprisTable: React.FC = () => {
       const priciest = sorted.slice(-5).map(r => r.hour)
 
       // Add color info
-    setRows(
-      filtered.map((row: PriceRow): PriceRow => ({
-        ...row,
-        color:
-        priciest.includes(row.hour)
-          ? 'red'
-          : cheapest.includes(row.hour)
-          ? 'green'
-          : 'default'
-      }))
-    )
+      setRows(
+        filtered.map((row: PriceRow): PriceRow => ({
+          ...row,
+          color:
+            priciest.includes(row.hour)
+              ? 'red'
+              : cheapest.includes(row.hour)
+                ? 'green'
+                : 'default'
+        }))
+      )
     } catch (e) {
       setRows([])
     }
   }
 
   useEffect(() => {
-    fetchPrices()
-    const timeout = setTimeout(fetchPrices, getNextMidnight())
-    return () => clearTimeout(timeout)
+    const scheduleFetch = () => {
+      fetchPrices()
+      const timeout = setTimeout(scheduleFetch, getNextMidnight())
+      return () => clearTimeout(timeout)
+    }
+
+    const cleanup = scheduleFetch()
+    return cleanup
   }, [])
+
 
   return (
     <div className={styles.container}>
@@ -91,8 +97,8 @@ const ElprisTable: React.FC = () => {
                 row.color === 'green'
                   ? styles.rowGreen
                   : row.color === 'red'
-                  ? styles.rowRed
-                  : styles.rowDefault
+                    ? styles.rowRed
+                    : styles.rowDefault
               }
             >
               <td className={styles.td}>{row.hour}</td>
