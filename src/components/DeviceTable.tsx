@@ -11,7 +11,7 @@ type Props = {
 }
 
 const DeviceTable: React.FC<Props> = ({ columns, data }) => (
-  <table style={{ width: '150%', borderCollapse: 'collapse', marginBottom: '2rem', border: '2px solid #000000' }}>
+  <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '2rem', border: '2px solid #000000' }}>
     <thead>
       <tr>
         {columns.map(col => (

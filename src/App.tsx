@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Gauge from './components/Gauge'
 import CenterGauge from './components/CenterGauge'
 import BatteryPercent from './components/BatteryPercent'
-import ElprisTable from './components/ElprisTable'
+//import ElprisTable from './components/ElprisTable'
 import mqtt from 'mqtt'
 import './App.css'
 import DeviceTable from './components/DeviceTable'
@@ -28,6 +28,7 @@ function App() {
   const [soc, setSoc] = useState('-')
   const [esoRows, setEsoRows] = useState<Record<string, any>[]>([])
   const [ssoRows, setSsoRows] = useState<Record<string, any>[]>([])
+  const [esmRows, setEsmRows] = useState<Record<string, any>[]>([])
 
   useEffect(() => {
     const client = mqtt.connect('ws://localhost:9001')
@@ -35,6 +36,7 @@ function App() {
       client.subscribe('extapi/data/ehub')
       client.subscribe('extapi/data/eso')
       client.subscribe('extapi/data/sso')
+      client.subscribe('extapi/data/esm')
     })
     client.on('message', (topic, message) => {
       try {
@@ -122,6 +124,23 @@ function App() {
             return [...filtered, row]
           })
         }
+
+        if (topic === 'extapi/data/esm') {
+          setEsmRows(prev => {
+            const id = msg.id?.val
+            if (!id) return prev
+            const shortId = id.slice(-9)
+            const row = {
+              id: shortId,
+              soc: msg.soc?.val ? Math.round(Number(msg.soc.val)) : '-',
+              ratedCapacity: msg.ratedCapacity?.val ? Math.round(Number(msg.ratedCapacity.val)) : '-',
+              ratedPower: msg.ratedPower?.val ? Math.round(Number(msg.ratedPower.val)) : '-',
+            }
+            const filtered = prev.filter(r => r.id !== shortId)
+            return [...filtered, row]
+          })
+        }
+
       } catch (e) {
         console.error('MQTT parse error:', e)
       }
@@ -130,6 +149,15 @@ function App() {
       client.end()
     }
   }, [])
+
+  const [ip, setIp] = useState("");
+
+  useEffect(() => {
+    fetch("https://api.ipify.org?format=json")
+      .then((res) => res.json())
+      .then((data) => setIp(data.ip))
+      .catch((err) => console.error("Error fetching IP:", err));
+  }, []);
 
   return (
     <div className="dashboard-grid">
@@ -186,8 +214,21 @@ function App() {
       <div className="battery">
         <BatteryPercent percent={soc} />
       </div>
-      <div className="elpris">
-        <ElprisTable />
+      <div style={{ textAlign: "center", marginBottom: "1rem" }}>
+        <strong>IPv4 address:</strong>{" "}
+        {ip ? ip : <span>Loading...</span>}
+      </div>
+      <div className="eso">
+        <h2>ESO</h2>
+        <DeviceTable
+          columns={[
+            { key: 'id', label: 'ID' },
+            { key: 'ubat', label: 'UBAT (V)' },
+            { key: 'temp', label: 'Temperatur (°C)' },
+            { key: 'faultcode', label: 'Felkod' },
+          ]}
+          data={esoRows}
+        />
       </div>
       <div className="sso">
         <h2>SSO</h2>
@@ -201,16 +242,16 @@ function App() {
           data={ssoRows}
         />
       </div>
-      <div className="eso">
-        <h2>ESO</h2>
+      <div className='esm'>
+        <h2>ESM</h2>
         <DeviceTable
           columns={[
             { key: 'id', label: 'ID' },
-            { key: 'ubat', label: 'UBAT (V)' },
-            { key: 'temp', label: 'Temperatur (°C)' },
-            { key: 'faultcode', label: 'Felkod' },
+            { key: 'soc', label: 'SOC (%)' },
+            { key: 'ratedCapacity', label: 'Capacity (Wh)' },
+            { key: 'ratedPower', label: 'Power (W)' },
           ]}
-          data={esoRows}
+          data={esmRows}
         />
       </div>
     </div>
