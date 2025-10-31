@@ -4,6 +4,7 @@ address ip-to-ferroamp:1883
 topic extapi/data/ehub both 0
 topic extapi/data/sso both 0
 topic extapi/data/eso both 0
+topic extapi/data/esm both 0
 
 try_private false
 start_type automatic
