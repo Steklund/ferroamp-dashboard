@@ -116,7 +116,7 @@ const ElprisTable: React.FC<ElprisTableProps> = ({ tomorrow = false }) => {
         const nextFetchTime = new Date(thirteen.getTime() + 24 * 60 * 60 * 1000)
         const delay_13 = nextFetchTime.getTime() - Date.now()
         const midnight = new Date()
-        midnight.setHours(24, 0, 0, 0)
+        midnight.setHours(1, 0, 0, 0)
         const delay_midnight = midnight.getTime() - Date.now()
         setTimeout(clearTable, delay_midnight)
         setTimeout(fetchEveryMinuteUntilData, delay_13)
