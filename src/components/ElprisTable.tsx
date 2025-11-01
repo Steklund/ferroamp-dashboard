@@ -39,7 +39,6 @@ const ElprisTable: React.FC<ElprisTableProps> = ({ tomorrow = false }) => {
     try {
       setError(null) // reset error state
       const res = await fetch(getApiUrl(tomorrow))
-      console.log(res.status, res.headers.get('content-type'));
 
       if (!res.ok) {
         throw new Error(`Fel vid hämtning: ${res.status}`)
@@ -101,51 +100,51 @@ const ElprisTable: React.FC<ElprisTableProps> = ({ tomorrow = false }) => {
   }
 
   useEffect(() => {
-  if (tomorrow) {
-    const now = new Date()
-    const thirteen = new Date()
-    thirteen.setHours(13, 0, 0, 0)
-
-    const fetchEveryMinuteUntilData = async () => {
-      await fetchPrices()
-      if (error != null) {
-        // try again in 1 minute
-        setTimeout(fetchEveryMinuteUntilData, 60 * 1000)
-      } else {
-        // once successful, wait until 13:00 next day
-        const nextFetchTime = new Date(thirteen.getTime() + 24 * 60 * 60 * 1000)
-        const delay_13 = nextFetchTime.getTime() - Date.now()
-        const midnight = new Date()
-        midnight.setHours(1, 0, 0, 0)
-        const delay_midnight = midnight.getTime() - Date.now()
-        setTimeout(clearTable, delay_midnight)
-        setTimeout(fetchEveryMinuteUntilData, delay_13)
-      }
-    }
-
-    const clearTable = () => {
-      setRows([])
-    }
-
-    if (now >= thirteen) {
-      // after 13:00 — start immediate minute-based fetching
-      fetchEveryMinuteUntilData()
-    } else {
-      // before 13:00 — schedule first fetch at 13:00
-      const delay = thirteen.getTime() - now.getTime()
-      setTimeout(fetchEveryMinuteUntilData, delay)
-    }
-  } else {
-    const scheduleFetch = () => {
+  if (!tomorrow) {
+    // === TODAY DATA ===
+    fetchPrices()
+    const midnightTimer = setTimeout(() => {
       fetchPrices()
-      const timeout = setTimeout(scheduleFetch, getNextMidnight())
-      return () => clearTimeout(timeout)
-    }
+    }, getNextMidnight())
 
-    const cleanup = scheduleFetch()
-    return cleanup
+    return () => clearTimeout(midnightTimer)
   }
-}, [error])
+
+  // === TOMORROW DATA ===
+  const clearTable = () => {
+    console.log("Tömmer morgondagens data vid midnatt")
+    setRows([])
+  }
+
+  const fetchWhenAvailable = async () => {
+    await fetchPrices()
+
+    // If a fetch error occurred, try again in 60 seconds
+    if (error != null) {
+      setTimeout(fetchWhenAvailable, 60 * 1000)
+    } else {
+      console.log("Morgondagens data hämtad")
+    }
+  }
+
+  // Try first fetch at 13:00 today
+  const now = new Date()
+  const thirteen = new Date()
+  thirteen.setHours(13, 0, 0, 0)
+
+  if (now >= thirteen) {
+    fetchWhenAvailable()
+  } else {
+    const delay = thirteen.getTime() - now.getTime()
+    setTimeout(fetchWhenAvailable, delay)
+  }
+
+  // Clear at midnight
+  const millisTillMidnight = getNextMidnight()
+  const midnightTimer = setTimeout(clearTable, millisTillMidnight)
+
+  return () => clearTimeout(midnightTimer)
+}, [tomorrow])
 
   const heading = tomorrow ? 'Elpris imorgon (Elområde 1)' : 'Elpris idag (Elområde 1)'
 
