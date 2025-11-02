@@ -27,7 +27,7 @@ function getApiUrl(forTomorrow = false): string {
   const month = String(now.getMonth() + 1).padStart(2, '0')
   const day = String(now.getDate()).padStart(2, '0')
   const return_url = `/elpriset/api/v1/prices/${year}/${month}-${day}_SE1.json`
-  console.log("fetching from " + return_url)
+  console.log('fetching from ' + return_url)
   return return_url
 }
 
@@ -35,25 +35,23 @@ const ElprisTable: React.FC<ElprisTableProps> = ({ tomorrow = false }) => {
   const [rows, setRows] = useState<PriceRow[]>([])
   const [error, setError] = useState<string | null>(null)
 
-  const fetchPrices = async () => {
+  const fetchPrices = async (): Promise<boolean> => {
     try {
-      setError(null) // reset error state
+      setError(null)
       const res = await fetch(getApiUrl(tomorrow))
 
-      if (!res.ok) {
-        throw new Error(`Fel vid hämtning: ${res.status}`)
-      }
+      if (!res.ok) throw new Error(`Fel vid hämtning: ${res.status}`)
 
       const data = await res.json()
       if (!Array.isArray(data) || data.length === 0) {
         setRows([])
         setError('Inga prisuppgifter tillgängliga för valt datum.')
-        return
+        return false
       }
 
       const raw = data.filter((row: any) => {
         const hour = Number(row.time_start.slice(11, 13))
-        return hour
+        return !isNaN(hour)
       })
 
       const hourlyMap = new Map<number, { sum: number; count: number }>()
@@ -84,7 +82,7 @@ const ElprisTable: React.FC<ElprisTableProps> = ({ tomorrow = false }) => {
       const priciest = new Set(sorted.slice(-5).map(r => r.hour))
 
       setRows(
-        filtered.map((row: PriceRow): PriceRow => ({
+        filtered.map(row => ({
           ...row,
           color: priciest.has(row.hour)
             ? 'red'
@@ -93,58 +91,61 @@ const ElprisTable: React.FC<ElprisTableProps> = ({ tomorrow = false }) => {
               : 'default'
         }))
       )
-    } catch (e: any) {
+
+      return true
+    } catch (e) {
+      console.error(e)
       setError('Inga tillgängliga elpriser. No price data available.')
       setRows([])
+      return false
     }
   }
 
   useEffect(() => {
-  if (!tomorrow) {
-    // === TODAY DATA ===
-    fetchPrices()
-    const midnightTimer = setTimeout(() => {
+    if (!tomorrow) {
+      // === DAGENS DATA ===
       fetchPrices()
-    }, getNextMidnight())
-
-    return () => clearTimeout(midnightTimer)
-  }
-
-  // === TOMORROW DATA ===
-  const clearTable = () => {
-    console.log("Tömmer morgondagens data vid midnatt")
-    setRows([])
-  }
-
-  const fetchWhenAvailable = async () => {
-    await fetchPrices()
-
-    // If a fetch error occurred, try again in 60 seconds
-    if (error != null) {
-      setTimeout(fetchWhenAvailable, 60 * 1000)
-    } else {
-      console.log("Morgondagens data hämtad")
+      const midnightTimer = setTimeout(fetchPrices, getNextMidnight())
+      return () => clearTimeout(midnightTimer)
     }
-  }
 
-  // Try first fetch at 13:00 today
-  const now = new Date()
-  const thirteen = new Date()
-  thirteen.setHours(13, 0, 0, 0)
+    // === MORGONDAGENS DATA ===
+    const clearTable = () => {
+      console.log('Tömmer morgondagens data vid midnatt')
+      setRows([])
+      setError(null)
+    }
 
-  if (now >= thirteen) {
-    fetchWhenAvailable()
-  } else {
-    const delay = thirteen.getTime() - now.getTime()
-    setTimeout(fetchWhenAvailable, delay)
-  }
+    const fetchWhenAvailable = async () => {
+      const success = await fetchPrices()
 
-  // Clear at midnight
-  const millisTillMidnight = getNextMidnight()
-  const midnightTimer = setTimeout(clearTable, millisTillMidnight)
+      if (!success) {
+        console.log('Morgondagens data ej tillgänglig ännu, försöker igen om 60s...')
+        setTimeout(fetchWhenAvailable, 60 * 1000)
+      } else {
+        console.log('Morgondagens data hämtad!')
+      }
+    }
 
-  return () => clearTimeout(midnightTimer)
-}, [tomorrow])
+    const now = new Date()
+    const thirteen = new Date()
+    thirteen.setHours(13, 0, 0, 0)
+
+    if (now >= thirteen) {
+      fetchWhenAvailable()
+    } else {
+      const delay = thirteen.getTime() - now.getTime()
+      console.log(
+        `Väntar till kl 13:00 för att börja hämta morgondagens priser (${Math.round(
+          delay / 1000 / 60
+        )} min)`
+      )
+      setTimeout(fetchWhenAvailable, delay)
+    }
+
+    const midnightTimer = setTimeout(clearTable, getNextMidnight())
+    return () => clearTimeout(midnightTimer)
+  }, [tomorrow])
 
   const heading = tomorrow ? 'Elpris imorgon (Elområde 1)' : 'Elpris idag (Elområde 1)'
 
