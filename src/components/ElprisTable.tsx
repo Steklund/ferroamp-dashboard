@@ -26,7 +26,7 @@ function getApiUrl(forTomorrow = false): string {
   const year = now.getFullYear()
   const month = String(now.getMonth() + 1).padStart(2, '0')
   const day = String(now.getDate()).padStart(2, '0')
-  const return_url = `/elpriset/api/v1/prices/${year}/${month}-${day}_SE1.json`
+  const return_url = `https://www.elprisetjustnu.se/api/v1/prices/${year}/${month}-${day}_SE1.json`
   console.log('fetching from ' + return_url)
   return return_url
 }
