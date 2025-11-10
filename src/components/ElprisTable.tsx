@@ -38,7 +38,7 @@ const ElprisTable: React.FC<ElprisTableProps> = ({ tomorrow = false }) => {
   const fetchPrices = async (): Promise<boolean> => {
     try {
       setError(null)
-      const res = await fetch(getApiUrl(tomorrow))
+      const res = await fetch(getApiUrl(tomorrow), { cache: 'no-store' })
 
       if (!res.ok) throw new Error(`Fel vid hämtning: ${res.status}`)
 
