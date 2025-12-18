@@ -1,7 +1,9 @@
 # Ferroamp dashboard
 
-This program is used to display data from an energyhub provided over MQTT from the energyhub.
+This program is used to display data from an energyhub that provides data over MQTT.
 Additionally a table for electricity prices from [elprisetjustnu](https://www.elprisetjustnu.se/) is provided.
+
+The entire program could very likely be replaced by grafana.
 
 ## Setup
 
@@ -52,4 +54,17 @@ Start the containers by running
 docker compose up
 ```
 One can add the **-d** flag to make it run detatched.
+
+## Features
+
+Currently the dashboard has two pages, the first is designed to run on a horizontal monitor and contains information about the grid, solar and batteries. I took the liberty to blur some information.
+
+The first page will be served on **localhost**
+![failed](https://github.com/Steklund/ferroamp-dashboard/blob/main/dashboard_localhost.png "localhost")
+
+The second dashboard page is designed to be viewed on a vertical display and simply displays the electric prices with some simple highlighting.
+
+The second page will be served on **localhost/electric-price**
+![failed](https://github.com/Steklund/ferroamp-dashboard/blob/main/dashboard_electric-price.png "localhost/electric-price")
+
 
