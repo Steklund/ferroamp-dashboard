@@ -38,6 +38,13 @@ And copy the template to the location:
 cp bridge-template.conf mosquitto/conf.d/bridge.conf
 ```
 
+### Change electric price region
+Currently to change the region for the electric price simply modify line 29 in [ElprisTable.tsx](https://github.com/Steklund/ferroamp-dashboard/blob/main/src/components/ElprisTable.tsx)
+```typescript
+const return_url = `https://www.elprisetjustnu.se/api/v1/prices/${year}/${month}-${day}_SE1.json`
+```
+Instead of SE1 type out one of the other zones (SE1, SE2, SE3, SE4).
+
 ### Build the react part
 Simply run
 ```bash
