@@ -1,0 +1,64 @@
+# This file is a template: the nginx image runs envsubst on it at startup and
+# replaces ${SOLARMAN_TOKEN} and ${PLANT_ID} with values from api.env.
+# nginx's own variables ($sn, $uri, ...) are left untouched.
+
+# Shared cache so several open dashboards / reloads don't spend extra API calls.
+proxy_cache_path /var/cache/nginx/solarman levels=1 keys_zone=solarman:1m max_size=10m inactive=1d;
+
+server {
+    listen 80;
+    server_name localhost;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    location / {
+        try_files $uri /index.html;
+    }
+
+    # --- Solarman proxy -----------------------------------------------------
+    # Only these two read-only calls are exposed; the token never reaches the browser.
+
+    # List of devices in the plant.
+    location = /api/solarman/devices {
+        limit_except GET { deny all; }
+
+        proxy_method POST;
+        proxy_set_header Authorization "bearer ${SOLARMAN_TOKEN}";
+        proxy_set_header Content-Type "application/json";
+        proxy_set_header Cookie "";
+        proxy_set_body '{"stationId":${PLANT_ID},"page":1,"size":50}';
+        proxy_pass https://globalapi.solarmanpv.com/station/v1.0/device?language=en;
+        proxy_ssl_server_name on;
+
+        proxy_cache solarman;
+        proxy_cache_key "devices";
+        proxy_cache_valid 200 15m;
+        proxy_cache_lock on;
+        proxy_ignore_headers Cache-Control Expires Set-Cookie;
+        add_header X-Cache-Status $upstream_cache_status always;
+    }
+
+    # Current data for one device, e.g. /api/solarman/device/ABC123
+    location ~ "^/api/solarman/device/(?<sn>[A-Za-z0-9_-]{1,64})$" {
+        limit_except GET { deny all; }
+
+        proxy_method POST;
+        proxy_set_header Authorization "bearer ${SOLARMAN_TOKEN}";
+        proxy_set_header Content-Type "application/json";
+        proxy_set_header Cookie "";
+        # Copy the capture before rewrite (which resets regex captures).
+        set $device_sn $sn;
+        rewrite ^ /device/v1.0/currentData?language=en break;
+        proxy_set_body '{"deviceSn":"$device_sn"}';
+        proxy_pass https://globalapi.solarmanpv.com;
+        proxy_ssl_server_name on;
+
+        proxy_cache solarman;
+        proxy_cache_key "device-$device_sn";
+        proxy_cache_valid 200 3m;
+        proxy_cache_lock on;
+        proxy_ignore_headers Cache-Control Expires Set-Cookie;
+        add_header X-Cache-Status $upstream_cache_status always;
+    }
+}

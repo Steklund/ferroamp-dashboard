@@ -45,6 +45,23 @@ const return_url = `https://www.elprisetjustnu.se/api/v1/prices/${year}/${month}
 ```
 Instead of SE1 type out one of the other zones (SE1, SE2, SE3, SE4).
 
+### Solarman batteries (optional)
+Copy **api_config.env** to **api.env** and fill in `SOLARMAN_TOKEN` (Solarman OpenAPI access token) and `PLANT_ID` (station id).
+nginx (and the Vite dev server) proxies the Solarman API under `/api/solarman/*` and adds the token server-side, so it is never shipped to the browser.
+Note that Solarman access tokens expire after a while; when the table stops updating, generate a new token and restart the nginx container.
+
+The battery list is fetched once at page load. Battery data is polled sequentially (one API call per battery).
+The office-hours interval (06–20) is calculated from the yearly call limit and the number of batteries, while off-hours use a fixed interval.
+With the defaults this gives ~20 min for 10 batteries and ~24 min for 12 batteries, and 120 min outside office hours.
+nginx caches responses so several open dashboards share the same calls.
+
+Display names for batteries and the schedule settings live in [solarmanConfig.ts](src/solarmanConfig.ts):
+```typescript
+export const BATTERY_NAMES: Record<string, string> = {
+  'SERIALNUMBER123': 'Batteri 1',
+}
+```
+
 ### Build the react part
 Simply run
 ```bash

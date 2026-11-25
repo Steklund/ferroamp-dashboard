@@ -6,6 +6,7 @@ import BatteryPercent from './components/BatteryPercent'
 import mqtt from 'mqtt'
 import './App.css'
 import DeviceTable from './components/DeviceTable'
+import SolarmanTable from './components/SolarmanTable'
 
 type Metric = {
   current: string
@@ -253,6 +254,10 @@ function App() {
           ]}
           data={esmRows}
         />
+      </div>
+      <div className='solarman'>
+        <h2>Solarman</h2>
+        <SolarmanTable />
       </div>
     </div>
   )
